@@ -10,6 +10,17 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+      - name: Fix missing android folder
+        run: |
+          if [ ! -d "android" ]; then
+            flutter create --project-name souq_amer --org com.souqamer temp_project
+            cp -r temp_project/android ./
+            if [ ! -f "pubspec.yaml" ]; then
+              cp temp_project/pubspec.yaml ./
+            fi
+            cp temp_project/analysis_options.yaml ./ || true
+            rm -rf temp_project
+          fi
       - run: flutter pub get
       - run: flutter build apk --release
       - uses: actions/upload-artifact@v4
